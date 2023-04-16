@@ -20,7 +20,11 @@
 		<div id="sukses" class="text-left mt-4"></div>
 		<div id="cost" class="text-left mt-4"></div>
 		<div id="noData" class="text-center mt-4"></div>
-		<div id="skenarioLow" class="text-left mt-2"></div>
+		<div id="skenarioLow" class="text-center mt-4"></div>
+	</div>
+
+	<div class="footer">
+		<p>Data didapat berdasarkan hasil pengujian dari lebih dari 1 tahun projek dan 3000 lebih skenario pada tahun 2021 - 2022 <br> &copy; 2023 Filbert Amadea</p>
 	</div>
 
 	<script>
@@ -28,8 +32,13 @@
 		var skenario = parseInt(document.getElementById("skenario").value);
 		if(isNaN(skenario)){
 			emptyData()
+			whiteList()
+			document.getElementById("skenarioLow").innerHTML = "";
+		} else if (skenario >= 10000) {
+			dataToMuch()
+			whiteList()
+			document.getElementById("noData").innerHTML = "";
 		} else {
-			var result = 0;
 			var rumus = 8.922032247
 			var waktu = 0.132217131
 			var sukses = 0.054095382
@@ -43,14 +52,28 @@
 			document.getElementById("waktu").innerHTML = "Waktu yang dibutuhkan: " + Math.ceil(waktu*pembanding) + " Sprint";
 			document.getElementById("orang").innerHTML = "Orang yang dibutuhkan: " + Math.ceil(orang*pembanding);
 			document.getElementById("sukses").innerHTML = "Persentase sukses scrum : " + countSukses(sukses, pembanding) ;
-			document.getElementById("cost").innerHTML = "Result: " + countCost(cost, pembanding) ;
+			document.getElementById("cost").innerHTML = "Cost scrum: " + countCost(cost, pembanding) ;
 
 			skenarioToLow(Math.ceil(orang*pembanding), skenario)
+
+			document.getElementById("skenario").value = "";
 		}
 	}
 
 	function emptyData() {
 		document.getElementById("noData").innerHTML = "Skenario tidak boleh kosong!";
+	}
+
+	function dataToMuch() {
+		document.getElementById("skenarioLow").innerHTML = "Skenario terlalu banyak untuk sebuah fitur atau projek, coba dibagi kedalam beberapa fitur!";
+	}
+
+	function whiteList() {
+		document.getElementById("jmlskenario").innerHTML = "";
+		document.getElementById("waktu").innerHTML = "";
+		document.getElementById("orang").innerHTML = "";
+		document.getElementById("sukses").innerHTML = "";
+		document.getElementById("cost").innerHTML = "";
 	}
 
 	function countSukses(sukses, pembanding) {
@@ -67,9 +90,9 @@
 	}
 
 	function countCost(cost, pembanding) {
-		var batasBawah = Math.floor(cost*pembanding)
-		var batasAtas = Math.ceil(cost*pembanding)
-		var displayGaji = "Rp " +  batasBawah + " - " + batasAtas + " juta per sprint"
+		var batasBawah = Math.floor(cost*pembanding) * 1000
+		var batasAtas = Math.ceil(cost*pembanding) * 1000
+		var displayGaji = "Rp " +  formatAngka(batasBawah) + " - " + formatAngka(batasAtas) + " juta per sprint"
 
 		return displayGaji
 	}
@@ -77,9 +100,17 @@
 	function skenarioToLow(orang){
 		if(orang < 2) {
 			document.getElementById("skenarioLow").innerHTML = "Skenario terlalu sedikit untuk dilakukan pengujian scrum, tapi kami akan tetap coba hitung.."  ;
+		} else if ( orang >= 2 && orang > 10) {
+			document.getElementById("skenarioLow").innerHTML = "Skenario terlalu banyak, mungkin coba untuk membagi kedalam beberapa projek atau fitur yang berbeda, tapi kami akan tetap coba hitung.."  ;
 		} else {
 			document.getElementById("skenarioLow").innerHTML = ""  ;
 		}
+	}
+
+	function formatAngka(n) {
+		return n.toFixed(2).replace('.', ',').replace(/\d{3}(?=(\d{3})*,)/g, function (s) {
+			return '.' + s
+		})
 	}
 
 	function resetForm() {
