@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Calculator</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="container">
+		<h1>Scrum Calculator</h1>
+		<div class="form-group">
+			<label for="num1">Masukan jumlah skenario dalam scrum :</label>
+			<input type="number" id="skenario" class="form-control">
+		</div>
+		<button onclick="calculate()" class="btn btn-primary btn-block">Calculate</button>
+		<button onclick="resetForm()" class="btn btn-secondary btn-block">Reset</button>
+		<div id="jmlskenario" class="text-left mt-4"></div>
+		<div id="waktu" class="text-left mt-4"></div>
+		<div id="orang" class="text-left mt-4"></div>
+		<div id="sukses" class="text-left mt-4"></div>
+		<div id="cost" class="text-left mt-4"></div>
+		<div id="noData" class="text-center mt-4"></div>
+		<div id="skenarioLow" class="text-left mt-2"></div>
+	</div>
+
+	<script>
+	function calculate() {
+		var skenario = parseInt(document.getElementById("skenario").value);
+		if(isNaN(skenario)){
+			emptyData()
+		} else {
+			var result = 0;
+			var rumus = 8.922032247
+			var waktu = 0.132217131
+			var sukses = 0.054095382
+			var orang = 0.058070556
+			var cost = 0.466197911
+
+			var pembanding = skenario / rumus
+
+			document.getElementById("jmlskenario").innerHTML = "Skenario: " + skenario 
+			+ " skenario";
+			document.getElementById("waktu").innerHTML = "Waktu yang dibutuhkan: " + Math.ceil(waktu*pembanding) + " Sprint";
+			document.getElementById("orang").innerHTML = "Orang yang dibutuhkan: " + Math.ceil(orang*pembanding);
+			document.getElementById("sukses").innerHTML = "Persentase sukses scrum : " + countSukses(sukses, pembanding) ;
+			document.getElementById("cost").innerHTML = "Result: " + countCost(cost, pembanding) ;
+
+			skenarioToLow(Math.ceil(orang*pembanding), skenario)
+		}
+	}
+
+	function emptyData() {
+		document.getElementById("noData").innerHTML = "Skenario tidak boleh kosong!";
+	}
+
+	function countSukses(sukses, pembanding) {
+		var persentase = sukses*pembanding
+		var angkaSukses = 100 - persentase
+		var display = ""
+		if(angkaSukses >= 85) {
+			display =  angkaSukses + "%"
+		} else {
+			display = "Dibawah 85%"
+		}
+
+		return display
+	}
+
+	function countCost(cost, pembanding) {
+		var batasBawah = Math.floor(cost*pembanding)
+		var batasAtas = Math.ceil(cost*pembanding)
+		var displayGaji = "Rp " +  batasBawah + " - " + batasAtas + " juta per sprint"
+
+		return displayGaji
+	}
+
+	function skenarioToLow(orang){
+		if(orang < 2) {
+			document.getElementById("skenarioLow").innerHTML = "Skenario terlalu sedikit untuk dilakukan pengujian scrum, tapi kami akan tetap coba hitung.."  ;
+		} else {
+			document.getElementById("skenarioLow").innerHTML = ""  ;
+		}
+	}
+
+	function resetForm() {
+		location.reload()
+		document.getElementById("skenario").value = "";
+		document.getElementById("jmlskenario").innerHTML = "";
+		document.getElementById("waktu").innerHTML = "";
+		document.getElementById("orang").innerHTML = "";
+		document.getElementById("sukses").innerHTML = "";
+		document.getElementById("cost").innerHTML = "";
+	}
+	</script>
+
+	<script src="calculator.js"></script>
+</body>
+</html>

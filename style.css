@@ -1,0 +1,65 @@
+body {
+    background-color: #A8DADC;
+  }
+  
+  .container {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    background-color: #FFFFFF;
+    padding: 20px;
+    margin-top: 20px;
+  }
+  
+  .form-group label,
+  .form-control,
+  .btn-primary {
+    /* background-color: #1D3557; */
+    border-color: #1D3557;
+    color: #000;
+  }
+  
+  .form-group label {
+    margin-bottom: 10px;
+  }
+  
+  .form-control:focus {
+    box-shadow: none;
+    border-color: #ccc;
+  }
+  
+  .form-control {
+    background-color: #F1F1F1; /* added background color for input box */
+  }
+  
+  .btn-primary:hover {
+    background-color: #457B9D;
+    border-color: #457B9D;
+    color: #FFFFFF;
+  }
+  
+  .btn-secondary {
+    background-color: transparent; /* changed to transparent */
+    border-color: #FFFFFF;
+    color: #000000;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #A8DADC;
+    border-color: #A8DADC;
+    color: #000000;
+  }
+  
+  #jmlskenario, #waktu, #orang, #sukses, #cost {
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #000000;
+    margin-left: 0;
+  }
+
+  #noData {
+    margin-top: 20px;
+    font-size: 34px;
+    font-weight: bold;
+    color: #000000;
+    margin-left: 0;
+  }
