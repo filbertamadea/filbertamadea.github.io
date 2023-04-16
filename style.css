@@ -64,6 +64,10 @@ body {
     margin-left: 0;
   }
 
+  #skenarioLow1 {
+    font-size: 14px;
+  }
+
   .footer {
     position: fixed;
     left: 0;

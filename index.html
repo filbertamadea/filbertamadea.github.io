@@ -21,6 +21,7 @@
 		<div id="cost" class="text-left mt-4"></div>
 		<div id="noData" class="text-center mt-4"></div>
 		<div id="skenarioLow" class="text-center mt-4"></div>
+		<div id="skenarioLow1" class="text-center mt-4"></div>
 	</div>
 
 	<div class="footer">
@@ -76,6 +77,7 @@
 		document.getElementById("orang").innerHTML = "";
 		document.getElementById("sukses").innerHTML = "";
 		document.getElementById("cost").innerHTML = "";
+		document.getElementById("skenarioLow1").innerHTML = "";
 	}
 
 	function countSukses(sukses, pembanding) {
@@ -101,11 +103,11 @@
 
 	function skenarioToLow(orang){
 		if(orang < 2) {
-			document.getElementById("skenarioLow").innerHTML = "Skenario terlalu sedikit untuk dilakukan pengujian scrum, tapi kami akan tetap coba hitung.."  ;
+			document.getElementById("skenarioLow1").innerHTML = "Skenario terlalu sedikit untuk dilakukan pengujian scrum, tapi kami akan tetap coba hitung.."  ;
 		} else if ( orang >= 2 && orang > 10) {
-			document.getElementById("skenarioLow").innerHTML = "Skenario terlalu banyak, mungkin coba untuk membagi kedalam beberapa projek atau fitur yang berbeda, tapi kami akan tetap coba hitung.."  ;
+			document.getElementById("skenarioLow1").innerHTML = "Skenario terlalu banyak, mungkin coba untuk membagi kedalam beberapa projek atau fitur yang berbeda, tapi kami akan tetap coba hitung.."  ;
 		} else {
-			document.getElementById("skenarioLow").innerHTML = ""  ;
+			document.getElementById("skenarioLow1").innerHTML = ""  ;
 		}
 	}
 
