@@ -39,23 +39,25 @@
 			dataToMuch()
 			whiteList()
 			document.getElementById("noData").innerHTML = "";
+		} else if (skenario <= 150) {
+			kedikitan()
 		} else {
 			document.getElementById("skenarioLow").innerHTML = "";
 			document.getElementById("noData").innerHTML = "";
-			var rumus = 8.922032247
-			var waktu = 0.132217131
-			var sukses = 0.054095382
-			var orang = 0.058070556
-			var cost = 0.466197911
+			var rumus = 34.59445711
+			var waktu = 2.44307
+			var sukses = -0.125
+			var orang = 0.2833
+			var cost = 1800000
 
 			var pembanding = skenario / rumus
 
 			document.getElementById("jmlskenario").innerHTML = "Skenario: " + skenario 
 			+ " skenario";
-			document.getElementById("waktu").innerHTML = "Waktu yang dibutuhkan: " + Math.ceil(waktu*pembanding) + " Sprint";
-			document.getElementById("orang").innerHTML = "Orang yang dibutuhkan: " + Math.ceil(orang*pembanding);
+			document.getElementById("waktu").innerHTML = "Waktu yang dibutuhkan: " + Math.ceil((waktu*pembanding/7)) + " Sprint";
+			document.getElementById("orang").innerHTML = "Orang yang dibutuhkan: " + countOrang(orang, pembanding);
 			document.getElementById("sukses").innerHTML = "Persentase sukses scrum : " + countSukses(sukses, pembanding) ;
-			document.getElementById("cost").innerHTML = "Cost scrum: " + countCost(cost, pembanding) ;
+			document.getElementById("cost").innerHTML = "Cost scrum: " + countCost(cost, pembanding, Math.ceil(orang*pembanding)) ;
 
 			skenarioToLow(Math.ceil(orang*pembanding), skenario)
 
@@ -65,6 +67,10 @@
 
 	function emptyData() {
 		document.getElementById("noData").innerHTML = "Skenario tidak boleh kosong!";
+	}
+
+	function kedikitan() {
+		document.getElementById("skenarioLow").innerHTML = "Skenario terlalu sedikit untuk dilakukan proses scrum!";
 	}
 
 	function dataToMuch() {
@@ -80,9 +86,21 @@
 		document.getElementById("skenarioLow1").innerHTML = "";
 	}
 
+	function countOrang(orang, pembanding) {
+		var hitung = Math.ceil(orang*pembanding)
+		var hasil = ""
+		if(hitung <=4) {
+			hasil = "4"
+		} else {
+			hasil = hitung
+		}
+
+		return hasil
+	}
+
 	function countSukses(sukses, pembanding) {
 		var persentase = sukses*pembanding
-		var angkaSukses = 100 - persentase
+		var angkaSukses = 100 + persentase
 		var display = ""
 		if(angkaSukses >= 85) {
 			display =  angkaSukses + "%"
@@ -93,10 +111,10 @@
 		return display
 	}
 
-	function countCost(cost, pembanding) {
-		var batasBawah = Math.floor(cost*pembanding) * 1000
-		var batasAtas = Math.ceil(cost*pembanding) * 1000
-		var displayGaji = "Rp " +  formatAngka(batasBawah) + " - " + formatAngka(batasAtas) + " juta per sprint"
+	function countCost(cost, pembanding, orang) {
+		var batasBawah = Math.floor(cost*pembanding*orang)  
+		var batasAtas = Math.ceil(cost*pembanding*orang) 
+		var displayGaji = formatAngka(batasBawah) + " - " + formatAngka(batasAtas) + " juta per sprint"
 
 		return displayGaji
 	}
@@ -111,10 +129,28 @@
 		}
 	}
 
-	function formatAngka(n) {
-		return n.toFixed(2).replace('.', ',').replace(/\d{3}(?=(\d{3})*,)/g, function (s) {
-			return '.' + s
-		})
+	function formatAngka(number) {
+		var rupiah = '';
+		var number_string = number.toString().replace(/[^,\d]/g, '');
+
+		var split = number_string.split(',');
+		var sisa = split[0].length % 3;
+
+		if (sisa === 0) {
+			rupiah += split[0].substr(0, 3);
+		} else {
+			rupiah += split[0].substr(0, sisa);
+		}
+
+		var ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+		if (ribuan) {
+			separator = sisa ? '.' : '';
+			rupiah += separator + ribuan.join('.');
+		}
+
+		rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+		return 'Rp ' + rupiah;
 	}
 
 	function resetForm() {
