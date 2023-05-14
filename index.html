@@ -40,7 +40,9 @@
 			whiteList()
 			document.getElementById("noData").innerHTML = "";
 		} else if (skenario <= 150) {
+			whiteList()
 			kedikitan()
+			document.getElementById("noData").innerHTML = "";
 		} else {
 			document.getElementById("skenarioLow").innerHTML = "";
 			document.getElementById("noData").innerHTML = "";
@@ -57,7 +59,7 @@
 			document.getElementById("waktu").innerHTML = "Waktu yang dibutuhkan: " + Math.ceil((waktu*pembanding/7)) + " Sprint";
 			document.getElementById("orang").innerHTML = "Orang yang dibutuhkan: " + countOrang(orang, pembanding);
 			document.getElementById("sukses").innerHTML = "Persentase sukses scrum : " + countSukses(sukses, pembanding) ;
-			document.getElementById("cost").innerHTML = "Cost scrum: " + countCost(cost, pembanding, Math.ceil(orang*pembanding)) ;
+			document.getElementById("cost").innerHTML = "Cost / scrum: Rp. " + countCost(cost, pembanding, Math.ceil(orang*pembanding)) ;
 
 			skenarioToLow(Math.ceil(orang*pembanding), skenario)
 
@@ -112,10 +114,9 @@
 	}
 
 	function countCost(cost, pembanding, orang) {
-		var batasBawah = Math.floor(cost*pembanding*orang)  
-		var batasAtas = Math.ceil(cost*pembanding*orang) 
-		var displayGaji = formatAngka(batasBawah) + " - " + formatAngka(batasAtas) + " juta per sprint"
-
+		var hasil = Math.floor(cost*pembanding)  
+		var displayGaji = formatAngka(hasil)
+		console.log(3, displayGaji)
 		return displayGaji
 	}
 
@@ -130,27 +131,18 @@
 	}
 
 	function formatAngka(number) {
-		var rupiah = '';
-		var number_string = number.toString().replace(/[^,\d]/g, '');
+		var	number_string = number.toString(),
+			sisa 	= number_string.length % 3,
+			rupiah 	= number_string.substr(0, sisa),
+			ribuan 	= number_string.substr(sisa).match(/\d{3}/g);
 
-		var split = number_string.split(',');
-		var sisa = split[0].length % 3;
+			// tambahkan titik jika yang di input sudah menjadi angka ribuan
+			if(ribuan){
+				separator = sisa ? '.' : '';
+				rupiah += separator + ribuan.join('.');
+			}
 
-		if (sisa === 0) {
-			rupiah += split[0].substr(0, 3);
-		} else {
-			rupiah += split[0].substr(0, sisa);
-		}
-
-		var ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-
-		if (ribuan) {
-			separator = sisa ? '.' : '';
-			rupiah += separator + ribuan.join('.');
-		}
-
-		rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-		return 'Rp ' + rupiah;
+			return rupiah
 	}
 
 	function resetForm() {
