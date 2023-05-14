@@ -91,12 +91,11 @@
 	function countOrang(orang, pembanding) {
 		var hitung = Math.ceil(orang*pembanding)
 		var hasil = ""
-		if(hitung <=4) {
+		if(hitung <= '4') {
 			hasil = "4"
 		} else {
 			hasil = hitung
 		}
-
 		return hasil
 	}
 
@@ -114,9 +113,16 @@
 	}
 
 	function countCost(cost, pembanding, orang) {
-		var hasil = Math.floor(cost*pembanding)  
+		var orangBener = Math.ceil(orang, pembanding)
+		var orangHitung 
+		if(orangBener <= 4) {
+			orangHitung = 4
+		} else {
+			orangHitung = orangBener
+		}
+		
+		var hasil = Math.floor(cost*pembanding)*orangHitung
 		var displayGaji = formatAngka(hasil)
-		console.log(3, displayGaji)
 		return displayGaji
 	}
 
