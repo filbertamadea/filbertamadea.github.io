@@ -1,28 +1,333 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Scrum Calculator</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="style.css">
-</head>
-<body>
-  <div class="container">
-    <h1>Scrum Calculator</h1>
-    <div class="form-group">
-      <label for="skenario">Masukan jumlah skenario dalam scrum:</label>
-      <input type="number" id="skenario" class="form-control">
+  <head>
+    <title>Scrum Calculator</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Scrum Calculator</h1>
+      <div class="form-group">
+        <label for="num1">Masukan jumlah skenario dalam scrum :</label>
+        <input type="number" id="skenario" class="form-control" />
+      </div>
+      <button onclick="calculate()" class="btn btn-primary btn-block">
+        Calculate
+      </button>
+      <button onclick="resetForm()" class="btn btn-secondary btn-block">
+        Reset
+      </button>
+      <button onclick="exportResults()" class="btn btn-success btn-block">
+        Export Results
+      </button>
+
+      <div id="jmlskenario" class="text-left mt-4"></div>
+      <div id="waktu" class="text-left mt-4"></div>
+      <div id="orang" class="text-left mt-4"></div>
+      <div id="sukses" class="text-left mt-4"></div>
+      <div id="cost" class="text-left mt-4"></div>
+      <div id="noData" class="text-center mt-4"></div>
+      <div id="skenarioLow" class="text-center mt-4"></div>
+      <div id="skenarioLow1" class="text-center mt-4"></div>
+      <div id="detail" class="text-left mt-4"></div>
+      <div id="detail2" class="text-left mt-4"></div>
     </div>
-    <button id="calculateBtn" class="btn btn-primary btn-block">Calculate</button>
-    <button id="resetBtn" class="btn btn-secondary btn-block">Reset</button>
-    <div id="results" class="text-left mt-4"></div>
-    <div id="errorMessages" class="text-center mt-4"></div>
-    <div id="skenarioLow" class="text-center mt-4"></div>
-  </div>
 
-  <div class="footer">
-    <p>Data didapat berdasarkan hasil pengujian dari lebih dari 1 tahun projek dan 25000 lebih skenario pada tahun 2020 - 2023<br>&copy; 2023 Filbert Amadea</p>
-  </div>
+    <div class="footer">
+      <p>
+        Data didapat berdasarkan hasil pengujian dari lebih dari 1 tahun projek
+        dan 25000 lebih skenario pada tahun 2020 - 2023 <br />
+        &copy; 2023 Filbert Amadea
+      </p>
+    </div>
 
-  <script src="calculator.js"></script>
-</body>
+    <script>
+      function exportResults() {
+        var skenario = parseInt(document.getElementById("skenario").value);
+
+        if (isNaN(skenario)) {
+          alert("Please enter a valid number of scenarios.");
+          return;
+        }
+
+        if (skenario >= 200 && skenario <= 10000) {
+          var maeSkenario = 528.667;
+          var maeSprint = 6.866;
+          var maeSukses = 93.33;
+          var maePeople = 6.033333333;
+          var maeCost = 60.33;
+
+          function hitungmae() {
+            var skenarioHitung = skenario / maeSkenario;
+            var sprintHitung = skenarioHitung * maeSprint - maeSprint;
+            var suksesHitung = skenarioHitung * maeSukses - maeSukses;
+            var peopleHitung = skenarioHitung * maePeople - maePeople;
+            var costHitung = skenarioHitung * maeCost - maeCost;
+
+            var hasil =
+              (sprintHitung + suksesHitung + peopleHitung + costHitung) / 4;
+            var formattedHasil = Math.abs(hasil).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            });
+            return formattedHasil;
+          }
+
+          var rumus = 34.59445711;
+          var waktu = 2.44307;
+          var sukses = -0.125;
+          var orang = 0.2833;
+          var cost = 1800000;
+
+          var pembanding = skenario / rumus;
+
+          var resultsText = `
+    Scrum Calculator Results:
+    -------------------------
+    Number of Scenarios: ${skenario} scenarios
+    Time Needed: ${Math.ceil((waktu * pembanding) / 7)} Sprint(s)
+    People Needed: ${countOrang(orang, pembanding)}
+    Success Rate: ${countSukses(sukses, pembanding)}
+
+    Note: This data has an estimated error of approximately ${hitungmae()}%.
+
+    Data obtained based on testing over more than 1 year of projects and 25000+ scenarios from 2020 - 2023.
+
+    © 2023 Filbert Amadea
+    `;
+
+          var blob;
+          if (typeof Blob !== "undefined") {
+            blob = new Blob([resultsText], { type: "text/plain" });
+          } else {
+            // Fallback for browsers that do not support Blob directly
+            var BlobBuilder =
+              window.BlobBuilder ||
+              window.WebKitBlobBuilder ||
+              window.MozBlobBuilder ||
+              window.MSBlobBuilder;
+            blob = new BlobBuilder();
+            blob.append(resultsText);
+            blob = blob.getBlob();
+          }
+
+          var fileName = `${skenario}_generated_result_${Date.now()}`;
+
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = fileName;
+          a.textContent = "Download " + fileName;
+          a.style.display = "none";
+
+          document.body.appendChild(a);
+          a.click();
+
+          document.body.removeChild(a);
+        } else {
+          alert("Number of scenarios must be between 200 and 10000.");
+        }
+      }
+
+      function calculate() {
+        var skenario = parseInt(document.getElementById("skenario").value);
+        if (isNaN(skenario)) {
+          emptyData();
+          whiteList();
+          document.getElementById("skenarioLow").innerHTML = "";
+        } else if (skenario >= 10000) {
+          dataToMuch();
+          whiteList();
+          document.getElementById("noData").innerHTML = "";
+        } else if (skenario <= 150) {
+          whiteList();
+          kedikitan();
+          document.getElementById("noData").innerHTML = "";
+        } else {
+          document.getElementById("skenarioLow").innerHTML = "";
+          document.getElementById("noData").innerHTML = "";
+          var rumus = 34.59445711;
+          var waktu = 2.44307;
+          var sukses = -0.125;
+          var orang = 0.2833;
+          var cost = 1800000;
+          var maeSkenario = 528.667;
+          var maeSprint = 6.866;
+          var maeSukses = 93.33;
+          var maePeople = 6.033333333;
+          var maeCost = 60.33;
+
+          var pembanding = skenario / rumus;
+
+          document.getElementById("jmlskenario").innerHTML =
+            "Skenario: " + skenario + " skenario";
+          document.getElementById("waktu").innerHTML =
+            "Waktu yang dibutuhkan: " +
+            Math.ceil((waktu * pembanding) / 7) +
+            " Sprint";
+          document.getElementById("orang").innerHTML =
+            "Orang yang dibutuhkan: " + countOrang(orang, pembanding);
+          document.getElementById("sukses").innerHTML =
+            "Persentase sukses scrum : " + countSukses(sukses, pembanding);
+
+          document.getElementById("detail").innerHTML = `
+          <h1><b>Summary<b/></h1>
+          `;
+
+          function hitungmae() {
+            var skenarioHitung = skenario / maeSkenario;
+            var sprintHitung = skenarioHitung * maeSprint - maeSprint;
+            var suksesHitung = skenarioHitung * maeSukses - maeSukses;
+            var peopleHitung = skenarioHitung * maePeople - maePeople;
+            var costHitung = skenarioHitung * maeCost - maeCost;
+
+            var hasil =
+              (sprintHitung + suksesHitung + peopleHitung + costHitung) / 4;
+            var formattedHasil = Math.abs(hasil).toLocaleString(undefined, {
+              maximumFractionDigits: 2,
+            });
+            return formattedHasil;
+          }
+
+          document.getElementById("detail2").innerHTML = `
+            Hasil scrum untuk ${skenario} skenario adalah seperti hasil diatas. 
+            Penjelasan-nya adalah sebagai berikut : <br> <br>
+            1. Satuan Sprint dijelaskan dalam satuan kurung waktu 1 minggu atau 5 hari kerja. Dalam arti misalkan 3 sprint adalah 15 HK (Hari Kerja). <br>
+            2. Orang yang dibutuhkan ini sebenarnya bisa bersifat relatif, tetapi hasil ini bisa menjadi patokan untuk gambaran kasar kebutuhan SDM. <br>
+            3. Persentase sukses ini dihasilkan tanpa ada gangguan lain. Contoh gangguan bisa berupa kelalaian manusia itu sendiri. <br>
+            4. Cost ini bersifat tentatif atau bisa berubah. Ini merupakan data menggunakan gaji staff IT rata rata. <br>
+            5. Data ini mempunyai error data ${hitungmae()} % <br> <br>
+              <h3> <b>Skala	Keterangan <br> </b> </h3> <br>
+              <ul>
+                <li>1-30%	Tingkat error rendah</li>
+                <li>31-50%	Tingkat error normal</li>
+                <li>51-60%	Tingkat error diatas rata-rata</li>
+                <li>61-80%	Tingkat error tinggi</li>
+                <li>81-100%	Data kurang valid</li>
+              </ul>
+              <br><br><br><br>
+          `;
+          skenarioToLow(Math.ceil(orang * pembanding), skenario);
+        }
+
+        var data = {
+          skenario: skenario,
+          timeNeeded: Math.ceil((waktu * pembanding) / 7),
+          peopleNeeded: countOrang(orang, pembanding),
+          successRate: countSukses(sukses, pembanding),
+        };
+
+        recordDataToGoogleSheets(data);
+      }
+
+      function recordDataToGoogleSheets(data) {
+        fetch("https://script.google.com/macros/s/AKfycbw5TtbYsy3X1QwuQl6XqVEjoKn4bVlIOPr5b3wWKWjnB9o8r39smT-0MLa2G0nQ5Eu4MA/exec", {
+          method: "POST",
+          mode: 'no-cors',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => response.text())
+          .then((result) => {
+            console.log(result);
+          })
+          .catch((error) => {
+            console.error("Error recording data:", error);
+          });
+      }
+
+      function emptyData() {
+        document.getElementById("noData").innerHTML =
+          "Skenario tidak boleh kosong!";
+      }
+
+      function kedikitan() {
+        document.getElementById("skenarioLow").innerHTML =
+          "Skenario terlalu sedikit untuk dilakukan proses scrum!";
+      }
+
+      function dataToMuch() {
+        document.getElementById("skenarioLow").innerHTML =
+          "Skenario terlalu banyak untuk sebuah fitur atau projek, coba dibagi kedalam beberapa fitur!";
+      }
+
+      function whiteList() {
+        document.getElementById("jmlskenario").innerHTML = "";
+        document.getElementById("waktu").innerHTML = "";
+        document.getElementById("orang").innerHTML = "";
+        document.getElementById("sukses").innerHTML = "";
+        document.getElementById("cost").innerHTML = "";
+        document.getElementById("skenarioLow1").innerHTML = "";
+        document.getElementById("detail").innerHTML = "";
+        document.getElementById("detail2").innerHTML = "";
+      }
+
+      function countOrang(orang, pembanding) {
+        var hitung = Math.ceil(orang * pembanding);
+        var hasil = "";
+        if (hitung <= "4") {
+          hasil = "4";
+        } else {
+          hasil = hitung;
+        }
+        return hasil;
+      }
+
+      function countSukses(sukses, pembanding) {
+        var persentase = sukses * pembanding;
+        var angkaSukses = Math.max(80, 100 + persentase); // Ensure it's at least 80
+        var formattedSukses = angkaSukses.toLocaleString(undefined, {
+          maximumFractionDigits: 2,
+        });
+        return formattedSukses + "%";
+      }
+
+      function countCost(cost, pembanding, orang) {
+        var hasil = Math.floor(cost * pembanding);
+        var displayGaji = formatAngka(hasil);
+        return displayGaji;
+      }
+
+      function skenarioToLow(orang) {
+        if (orang < 2) {
+          document.getElementById("skenarioLow1").innerHTML =
+            "Skenario terlalu sedikit untuk dilakukan pengujian scrum, tapi kami akan tetap coba hitung..";
+        } else if (orang >= 2 && orang > 10) {
+          document.getElementById("skenarioLow1").innerHTML =
+            "Skenario terlalu banyak, mungkin coba untuk membagi kedalam beberapa projek atau fitur yang berbeda, tapi kami akan tetap coba hitung..";
+        } else {
+          document.getElementById("skenarioLow1").innerHTML = "";
+        }
+      }
+
+      function formatAngka(number) {
+        var number_string = number.toString(),
+          sisa = number_string.length % 3,
+          rupiah = number_string.substr(0, sisa),
+          ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+        // tambahkan titik jika yang di input sudah menjadi angka ribuan
+        if (ribuan) {
+          separator = sisa ? "." : "";
+          rupiah += separator + ribuan.join(".");
+        }
+
+        return rupiah;
+      }
+
+      function resetForm() {
+        location.reload();
+        document.getElementById("skenario").value = "";
+        document.getElementById("jmlskenario").innerHTML = "";
+        document.getElementById("waktu").innerHTML = "";
+        document.getElementById("orang").innerHTML = "";
+        document.getElementById("sukses").innerHTML = "";
+        document.getElementById("cost").innerHTML = "";
+      }
+    </script>
+  </body>
 </html>
