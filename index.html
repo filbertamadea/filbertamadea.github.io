@@ -291,16 +291,16 @@
         } else {
           document.getElementById("skenarioLow").innerHTML = "";
           document.getElementById("noData").innerHTML = "";
-          var rumus = 34.59445711;
-          var waktu = 2.44307;
-          var sukses = -0.125;
-          var orang = 0.2833;
-          var cost = 1800000;
-          var maeSkenario = 528.667;
-          var maeSprint = 6.866;
-          var maeSukses = 93.33;
-          var maePeople = 6.033333333;
-          var maeCost = 60.33;
+          var rumus = 34.59445711; // Y Dependen
+          var waktu = 2.44307; //X1
+          var sukses = -1.25; //X2
+          var orang = 2.833; //X3
+          var cost = 1800000; // X4
+          var maeSkenario = 528.667; //Rata rata dari data skenario
+          var maeSprint = 6.866; //Rata rata sprint
+          var maeSukses = 93.33; //Rata rata suksesrate
+          var maePeople = 6.033333333; //Rata rata orang
+          var maeCost = 60.33; //Rata rata cost
 
           var pembanding = skenario / rumus;
 
@@ -308,7 +308,7 @@
             "Skenario: " + skenario + " skenario";
           document.getElementById("waktu").innerHTML =
             "Waktu yang dibutuhkan: " +
-            Math.ceil((waktu * pembanding) / 7) +
+            Math.ceil(pembanding / waktu) +
             " Sprint";
           document.getElementById("orang").innerHTML =
             "Orang yang dibutuhkan: " + countOrang(orang, pembanding);
@@ -414,7 +414,7 @@
       }
 
       function countOrang(orang, pembanding) {
-        var hitung = Math.ceil(orang * pembanding);
+        var hitung = Math.ceil(pembanding / orang);
         var hasil = "";
         if (hitung <= "4") {
           hasil = "4";
@@ -425,8 +425,8 @@
       }
 
       function countSukses(sukses, pembanding) {
-        var persentase = sukses * pembanding;
-        var angkaSukses = Math.max(80, 100 + persentase); // Ensure it's at least 80
+        var persentase = pembanding / sukses;
+        var angkaSukses = Math.max(80, 100 + persentase); 
         var formattedSukses = angkaSukses.toLocaleString(undefined, {
           maximumFractionDigits: 2,
         });
