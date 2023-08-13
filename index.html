@@ -6,6 +6,7 @@
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
     />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" type="text/css" href="style.css" />
   </head>
   <body>
@@ -15,6 +16,9 @@
         <label for="num1">Masukan jumlah skenario dalam scrum :</label>
         <input type="number" id="skenario" class="form-control" />
       </div>
+      <button onclick="openInputPage()" class="btn btn-info btn-block">
+        Input Scrum Data
+      </button>
       <button onclick="calculate()" class="btn btn-primary btn-block">
         Calculate
       </button>
@@ -37,6 +41,67 @@
       <div id="detail2" class="text-left mt-4"></div>
     </div>
 
+    <div
+      class="modal fade"
+      id="inputModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="inputModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="inputModalLabel">Input Scrum Data</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="inputForm">
+              <div class="form-group">
+                <label for="inputSkenario">Number of Scenarios:</label>
+                <input type="number" id="inputSkenario" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label for="inputSprint">Number of Sprints:</label>
+                <input type="number" id="inputSprint" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label for="inputPeople">Number of People:</label>
+                <input type="number" id="inputPeople" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label for="inputSuccessRate">Success Rate (%):</label>
+                <input
+                  type="number"
+                  id="inputSuccessRate"
+                  class="form-control"
+                />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+            <button type="button" class="btn btn-primary" onclick="saveInput()">
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="footer">
       <p>
         Data didapat berdasarkan hasil pengujian dari lebih dari 1 tahun projek
@@ -45,7 +110,85 @@
       </p>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
     <script>
+      function openInputPage() {
+        $("#inputModal").modal("show");
+      }
+
+      function saveInput() {
+        // Get values from input fields
+        var inputSkenario = parseInt(
+          document.getElementById("inputSkenario").value
+        );
+        var inputSprint = parseInt(
+          document.getElementById("inputSprint").value
+        );
+        var inputPeople = parseInt(
+          document.getElementById("inputPeople").value
+        );
+        var inputSuccessRate = parseFloat(
+          document.getElementById("inputSuccessRate").value
+        );
+
+        // Validate input
+        if (
+          isNaN(inputSkenario) ||
+          inputSkenario < 200 ||
+          inputSkenario > 10000 ||
+          isNaN(inputSprint) ||
+          isNaN(inputPeople) ||
+          isNaN(inputSuccessRate) ||
+          inputSuccessRate > 100 ||
+          inputSkenario === "" ||
+          inputSprint === "" ||
+          inputPeople === "" ||
+          inputSuccessRate === ""
+        ) {
+          alert(
+            "Silakan masukkan nilai yang valid untuk semua kolom. Jumlah Skenario harus berada di antara 200 dan 10000, Persentase Keberhasilan tidak boleh lebih dari 100, dan semua kolom harus diisi."
+          );
+          return;
+        }
+        var data = {
+          skenario: inputSkenario,
+          timeNeeded: inputSprint,
+          peopleNeeded: inputPeople,
+          successRate: inputSuccessRate,
+        };
+
+        fetch(
+          "https://script.google.com/macros/s/AKfycbxo21VJpGQuWeoBzFL6y3HwdZQN8HWNrWX5dEPsAa20leeV-xb29qNRPAqlsmTJoSIiuQ/exec",
+          {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        )
+          .then((response) => response.text())
+          .then((result) => {
+            console.log(result);
+            alert("Data successfully recorded!");
+          })
+          .catch((error) => {
+            console.error("Error recording data:", error);
+          });
+
+        // Clear input fields
+        document.getElementById("inputSkenario").value = "";
+        document.getElementById("inputSprint").value = "";
+        document.getElementById("inputPeople").value = "";
+        document.getElementById("inputSuccessRate").value = "";
+
+        // Close the modal
+        $("#inputModal").modal("hide");
+      }
+
       function exportResults() {
         var skenario = parseInt(document.getElementById("skenario").value);
 
@@ -223,17 +366,21 @@
       }
 
       function recordDataToGoogleSheets(data) {
-        fetch("https://script.google.com/macros/s/AKfycbw5TtbYsy3X1QwuQl6XqVEjoKn4bVlIOPr5b3wWKWjnB9o8r39smT-0MLa2G0nQ5Eu4MA/exec", {
-          method: "POST",
-          mode: 'no-cors',
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        })
+        fetch(
+          "https://script.google.com/macros/s/AKfycbw5TtbYsy3X1QwuQl6XqVEjoKn4bVlIOPr5b3wWKWjnB9o8r39smT-0MLa2G0nQ5Eu4MA/exec",
+          {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        )
           .then((response) => response.text())
           .then((result) => {
             console.log(result);
+            alert("Data successfully recorded!");
           })
           .catch((error) => {
             console.error("Error recording data:", error);
